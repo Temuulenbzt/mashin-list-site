@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админ нэвтрэх - Машин лист</title>
+  <meta name="description" content="Машин листийн админ нэвтрэх хуудас.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23231f20'/%3E%3Cpath d='M15 39h34l-3-12c-.6-2.4-2.8-4-5.2-4H23.2c-2.4 0-4.6 1.6-5.2 4l-3 12Z' fill='%23ffd200'/%3E%3Cpath d='M20 39h24v7H20z' fill='%23fff7c4'/%3E%3Ccircle cx='22' cy='47' r='5' fill='%23ffd200'/%3E%3Ccircle cx='42' cy='47' r='5' fill='%23ffd200'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ink: #231f20;
+      --muted: #706a66;
+      --line: #e5dcc3;
+      --paper: #f7f3e3;
+      --card: #fffdf4;
+      --yellow: #ffd200;
+      --shadow: 0 18px 45px rgba(35, 31, 32, 0.12);
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 210, 0, 0.22), transparent 34rem),
+        linear-gradient(180deg, #fffdf4 0%, var(--paper) 48%, #efe7ce 100%);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: min(460px, 100%);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .logo {
+      width: min(230px, 80%);
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      line-height: 1.1;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    input,
+    button {
+      font: inherit;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #c9d6e6;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input:focus {
+      outline: 3px solid rgba(255, 210, 0, 0.3);
+      border-color: var(--yellow);
+    }
+
+    button,
+    .back-link {
+      min-height: 46px;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    button {
+      border: 1px solid var(--ink);
+      background: var(--yellow);
+      color: var(--ink);
+    }
+
+    .back-link {
+      display: grid;
+      place-items: center;
+      border: 1px solid #ddd1aa;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .status {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <main class="login-card">
+    <img class="logo" src="assets/hunu-logo.png" alt="HUNU">
+    <h1>Админ нэвтрэх</h1>
+
+    <form id="loginForm">
+      <label>
+        Email
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="admin@example.com" required>
+      </label>
+      <label>
+        Password
+        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Нууц үг" required>
+      </label>
+      <button type="submit">Нэвтрэх</button>
+      <a class="back-link" href="index.html">Жагсаалт руу буцах</a>
+      <div class="status" id="status">Зөвхөн admin эрхтэй хэрэглэгч нэвтэрнэ.</div>
+    </form>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, getIdTokenResult, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGpUiuN2xtdjXhvVO7yuiW_zKr2stqTzY",
+      authDomain: "barter-list.firebaseapp.com",
+      databaseURL: "https://barter-list-default-rtdb.firebaseio.com",
+      projectId: "barter-list",
+      storageBucket: "barter-list.firebasestorage.app",
+      messagingSenderId: "646141937946",
+      appId: "1:646141937946:web:0f5dc98f9d62533a0ec4a3",
+      measurementId: "G-TZP4L99QQ1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const form = document.querySelector("#loginForm");
+    const status = document.querySelector("#status");
+
+    async function goToAdminIfAllowed(user) {
+      const token = await getIdTokenResult(user, true);
+      if (token.claims.admin === true) {
+        window.location.href = "admin.html";
+        return;
+      }
+      await signOut(auth);
+      status.textContent = "Энэ хэрэглэгчид admin эрх алга.";
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      try {
+        await goToAdminIfAllowed(user);
+      } catch (error) {
+        status.textContent = `Эрх шалгахад алдаа гарлаа: ${error.message}`;
+      }
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      status.textContent = "Нэвтрэх эрх шалгаж байна...";
+
+      try {
+        const credential = await signInWithEmailAndPassword(auth, data.get("email").trim(), data.get("password"));
+        await goToAdminIfAllowed(credential.user);
+      } catch (error) {
+        status.textContent = "Email эсвэл password буруу байна.";
+      }
+    });
+  </script>
+</body>
+</html>
