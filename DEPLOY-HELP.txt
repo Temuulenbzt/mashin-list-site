@@ -1,0 +1,1 @@
+Netlify: deploy root folder containing index.html, not parent folder. If GitHub-linked, upload all extracted files to repository root and commit. In Netlify Build settings, publish directory must be repository root (.) and build command empty. This ZIP does not change Firebase database or admin claims.
